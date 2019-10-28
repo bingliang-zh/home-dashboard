@@ -5,13 +5,13 @@
     android:layout_height="match_parent"
     android:background="#0099cc"
     android:keepScreenOn="true"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:id="@+id/fullscreen_content"
     tools:context=".FullscreenActivity">
 
     <TextClock
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
         android:layout_weight="1"
         android:textColor="#33b5e5"
         android:textStyle="bold"
@@ -20,8 +20,8 @@
         android:text="@string/clock_text" />
 
     <TextClock
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
         android:layout_weight="1"
         android:textColor="#33b5e5"
         android:textStyle="bold"
