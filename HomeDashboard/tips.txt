@@ -1,0 +1,6 @@
+``` shell
+    adb devices
+    adb tcpip 5555
+    adb connect <IP ADDRESS>
+    adb disconnect <IP ADDRESS>
+```
