@@ -12,21 +12,45 @@
     <TextClock
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="3"
         android:textColor="#33b5e5"
         android:textStyle="bold"
         android:textSize="50sp"
         android:gravity="center"
         android:text="@string/clock_text" />
 
-    <TextClock
-        android:layout_height="match_parent"
+    <GridLayout
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textColor="#33b5e5"
-        android:textStyle="bold"
-        android:textSize="50sp"
-        android:gravity="center"
-        android:text="@string/clock_text" />
+        android:columnCount="2"
+        android:rowCount="2"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+        <Button
+            android:id="@+id/btn_idle"
+            android:background="@color/idle"
+            android:layout_columnWeight="1"
+            android:text="Idle"
+            android:onClick="onIdleClick"/>
+        <Button
+            android:id="@+id/btn_activated"
+            android:background="@color/activated"
+            android:layout_columnWeight="1"
+            android:text="Activated"
+            android:onClick="onActivatedClick"/>
+        <Button
+            android:id="@+id/btn_success"
+            android:background="@color/success"
+            android:layout_columnWeight="1"
+            android:text="Success"
+            android:onClick="onSuccessClick"/>
+        <Button
+            android:id="@+id/btn_fail"
+            android:background="@color/fail"
+            android:layout_columnWeight="1"
+            android:text="Fail"
+            android:onClick="onFailClick"/>
+    </GridLayout>
 
 </LinearLayout>

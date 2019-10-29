@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_fullscreen.*
 
 /**
@@ -42,6 +43,19 @@ class FullscreenActivity : AppCompatActivity() {
         // Hide UI first
         supportActionBar?.hide()
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY.toLong())
+    }
+
+    fun onIdleClick(view: View) {
+        fullscreen_content.setBackgroundColor(ContextCompat.getColor(view.context, R.color.idle))
+    }
+    fun onActivatedClick(view: View) {
+        fullscreen_content.setBackgroundColor(ContextCompat.getColor(view.context, R.color.activated))
+    }
+    fun onSuccessClick(view: View) {
+        fullscreen_content.setBackgroundColor(ContextCompat.getColor(view.context, R.color.success))
+    }
+    fun onFailClick(view: View) {
+        fullscreen_content.setBackgroundColor(ContextCompat.getColor(view.context, R.color.fail))
     }
 
     /**
