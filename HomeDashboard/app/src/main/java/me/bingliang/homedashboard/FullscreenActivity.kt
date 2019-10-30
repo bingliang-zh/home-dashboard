@@ -1,9 +1,11 @@
 package me.bingliang.homedashboard
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_fullscreen.*
 
@@ -45,17 +47,47 @@ class FullscreenActivity : AppCompatActivity() {
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY.toLong())
     }
 
+    private val mBackgroundHandler = Handler()
+
+    private fun changeBackground(context: Context, color: Int) {
+        fullscreen_content.setBackgroundColor(ContextCompat.getColor(context, color))
+    }
+
     fun onIdleClick(view: View) {
-        fullscreen_content.setBackgroundColor(ContextCompat.getColor(view.context, R.color.idle))
+        changeBackground(view.context, R.color.idle)
+        mBackgroundHandler.postDelayed(
+            {
+                changeBackground(view.context, R.color.default_background)
+            }
+            , 1000
+        )
     }
     fun onActivatedClick(view: View) {
-        fullscreen_content.setBackgroundColor(ContextCompat.getColor(view.context, R.color.activated))
+        changeBackground(view.context, R.color.activated)
+        mBackgroundHandler.postDelayed(
+            {
+                changeBackground(view.context, R.color.default_background)
+            }
+            , 1000
+        )
     }
     fun onSuccessClick(view: View) {
-        fullscreen_content.setBackgroundColor(ContextCompat.getColor(view.context, R.color.success))
+        changeBackground(view.context, R.color.success)
+        mBackgroundHandler.postDelayed(
+            {
+                changeBackground(view.context, R.color.default_background)
+            }
+            , 1000
+        )
     }
     fun onFailClick(view: View) {
-        fullscreen_content.setBackgroundColor(ContextCompat.getColor(view.context, R.color.fail))
+        changeBackground(view.context, R.color.fail)
+        mBackgroundHandler.postDelayed(
+            {
+                changeBackground(view.context, R.color.default_background)
+            }
+            , 1000
+        )
     }
 
     /**
