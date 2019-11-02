@@ -10,4 +10,5 @@
     <color name="activated">#E4CD32</color>
     <color name="success">#8FE331</color>
     <color name="fail">#E3316B</color>
+    <color name="record">#ddff00</color>
 </resources>

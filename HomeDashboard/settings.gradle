@@ -1,2 +1,5 @@
-include ':app'
+include ':app', ':porcupinemanager', ':porcupine'
 rootProject.name='HomeDashboard'
+
+project(':porcupine').projectDir = new File('./lib/porcupine')
+project(':porcupinemanager').projectDir = new File('./lib/porcupinemanager')

@@ -1,26 +1,30 @@
 package me.bingliang.homedashboard
 
-import android.content.Context
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_fullscreen.*
+
+import ai.picovoice.porcupinemanager.KeywordCallback
+import ai.picovoice.porcupinemanager.PorcupineManager
+import ai.picovoice.porcupinemanager.PorcupineManagerException
+import android.os.CountDownTimer
+import android.widget.ToggleButton
+import java.io.File
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 class FullscreenActivity : AppCompatActivity() {
+    private var porcupineManager: PorcupineManager? = null
+    private var notificationPlayer: MediaPlayer? = null
+    private var recordButton: ToggleButton? = null
     private val mHideHandler = Handler()
     private val mHidePart2Runnable = Runnable {
-        // Delayed removal of status and navigation bar
-
-        // Note that some of these constants are new as of API 16 (Jelly Bean)
-        // and API 19 (KitKat). It is safe to use them, as they are inlined
-        // at compile-time and do nothing on earlier devices.
         fullscreen_content.systemUiVisibility =
                 View.SYSTEM_UI_FLAG_LOW_PROFILE or
                 View.SYSTEM_UI_FLAG_FULLSCREEN or
@@ -34,6 +38,9 @@ class FullscreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fullscreen)
+        Utils.configurePorcupine(this)
+        notificationPlayer = MediaPlayer.create(this, R.raw.notification)
+        recordButton = findViewById(R.id.btn_record)
     }
 
     override fun onResume() {
@@ -42,68 +49,82 @@ class FullscreenActivity : AppCompatActivity() {
     }
 
     private fun hide() {
-        // Hide UI first
         supportActionBar?.hide()
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY.toLong())
     }
 
     private val mBackgroundHandler = Handler()
 
-    private fun changeBackground(context: Context, color: Int) {
-        fullscreen_content.setBackgroundColor(ContextCompat.getColor(context, color))
+    private fun simpleChangeBackground(color: Int) {
+        fullscreen_content.setBackgroundColor(ContextCompat.getColor(fullscreen_content.context, color))
+    }
+    private fun changeBackground(color: Int) {
+        simpleChangeBackground(color)
+        mBackgroundHandler.removeCallbacksAndMessages(null)
+        mBackgroundHandler.postDelayed({ simpleChangeBackground(R.color.default_background) }, 1000)
     }
 
-    fun onIdleClick(view: View) {
-        changeBackground(view.context, R.color.idle)
-        mBackgroundHandler.postDelayed(
-            {
-                changeBackground(view.context, R.color.default_background)
+    fun onIdleClick(view: View) { changeBackground(R.color.idle) }
+    fun onActivatedClick(view: View) { changeBackground(R.color.activated) }
+    fun onSuccessClick(view: View) { changeBackground(R.color.success) }
+    fun onFailClick(view: View) { changeBackground(R.color.fail) }
+
+    fun onRecordClick(view: View) {
+        try {
+            if (recordButton!!.isChecked) {
+                // check if record permission was given.
+                if (Utils.hasRecordPermission(this)) {
+                    porcupineManager = initPorcupine()
+                    porcupineManager?.start()
+
+                } else {
+                    Utils.showRecordPermission(this)
+                }
+            } else {
+                porcupineManager?.stop()
             }
-            , 1000
-        )
-    }
-    fun onActivatedClick(view: View) {
-        changeBackground(view.context, R.color.activated)
-        mBackgroundHandler.postDelayed(
-            {
-                changeBackground(view.context, R.color.default_background)
-            }
-            , 1000
-        )
-    }
-    fun onSuccessClick(view: View) {
-        changeBackground(view.context, R.color.success)
-        mBackgroundHandler.postDelayed(
-            {
-                changeBackground(view.context, R.color.default_background)
-            }
-            , 1000
-        )
-    }
-    fun onFailClick(view: View) {
-        changeBackground(view.context, R.color.fail)
-        mBackgroundHandler.postDelayed(
-            {
-                changeBackground(view.context, R.color.default_background)
-            }
-            , 1000
-        )
+        } catch (e: PorcupineManagerException) {
+            Utils.showErrorToast(this)
+        }
+
     }
 
-    /**
-     * Schedules a call to hide() in [delayMillis], canceling any
-     * previously scheduled calls.
-     */
+    @Throws(PorcupineManagerException::class)
+    private fun initPorcupine(): PorcupineManager {
+        val kwd = "Hey Pico"
+        val filename = kwd.toLowerCase().replace("\\s+".toRegex(), "_")
+        val keywordFilePath = File(this.filesDir, "${filename}.ppn")
+            .absolutePath
+        val modelFilePath = File(this.filesDir, "params.pv").absolutePath
+        return PorcupineManager(modelFilePath, keywordFilePath, 0.2f, KeywordCallback {
+            runOnUiThread {
+                if (!notificationPlayer!!.isPlaying) {
+                    notificationPlayer?.start()
+                }
+
+                simpleChangeBackground(R.color.success)
+                object : CountDownTimer(1000, 100) {
+
+                    override fun onTick(millisUntilFinished: Long) {
+                        if (!notificationPlayer!!.isPlaying) {
+                            notificationPlayer?.start()
+                        }
+                    }
+
+                    override fun onFinish() {
+                        simpleChangeBackground(R.color.default_background)
+                    }
+                }.start()
+            }
+        })
+    }
+
     private fun delayedHide(delayMillis: Int) {
         mHideHandler.removeCallbacks(mHideRunnable)
         mHideHandler.postDelayed(mHideRunnable, delayMillis.toLong())
     }
 
     companion object {
-        /**
-         * Some older devices needs a small delay between UI widget updates
-         * and a change of the status and navigation bar.
-         */
         private val UI_ANIMATION_DELAY = 300
     }
 }

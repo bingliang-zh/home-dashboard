@@ -24,8 +24,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:columnCount="2"
-        android:rowCount="2"
-        android:orientation="vertical"
+        android:rowCount="3"
+        android:orientation="horizontal"
         android:layout_gravity="center">
         <Button
             android:id="@+id/btn_idle"
@@ -51,6 +51,14 @@
             android:layout_columnWeight="1"
             android:text="Fail"
             android:onClick="onFailClick"/>
+        <Button
+            android:id="@+id/btn_record"
+            android:layout_columnSpan="2"
+            android:layout_columnWeight="1"
+            android:textOff="Start"
+            android:textOn="Stop"
+            android:background="@color/record"
+            android:onClick="onRecordClick"/>
     </GridLayout>
 
 </LinearLayout>
